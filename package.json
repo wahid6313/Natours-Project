@@ -5,12 +5,13 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon node app.js"
+    "start": "nodemon node server.js"
   },
   "author": "wahid ali",
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",
+    "morgan": "^1.10.0",
     "nodemon": "^3.1.4"
   }
 }

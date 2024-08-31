@@ -1,63 +1,28 @@
 const express = require("express");
-const fs = require("fs");
+
+const morgan = require("morgan");
+
+const tourRouter = require("./Routes/tourRoutes");
+const userRouter = require("./Routes/userRoutes");
 
 const app = express();
+
+//MIDLEWARE------------------------------------------------
+app.use(morgan("dev"));
+
 app.use(express.json());
 
-const tours = JSON.parse(fs.readFileSync(`${__dirname}/wahid.json`));
+app.use((req, res, next) => {
+  console.log("hello i am midilleware !");
+  next();
+});
 
-const getAllTours = (req, res) => {
-  res.status(200).json({
-    status: "succes",
-    results: tours.length,
-    data: {
-      tours,
-    },
-  });
-};
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
 
-const getTour = (req, res) => {
-  console.log(req.params);
-
-  const id = req.params.id * 1;
-  const tour = tours.find((el) => el.id === id);
-
-  // if (id > tours.length) {
-  if (!tour) {
-    return res.status(404).json({
-      status: "fail",
-      message: "'Invalid Id",
-    });
-  }
-
-  res.status(200).json({
-    status: "succes",
-    data: {
-      tour,
-    },
-  });
-};
-
-const createTour = (req, res) => {
-  console.log(req.body);
-  res.send("done");
-};
-
-const updateTour = (req, res) => {
-  res.status(200).json({
-    status: "success",
-    data: {
-      tour: "< Updated tour Here>",
-    },
-  });
-};
-
-const deleteTour = (req, res) => {
-  res.status(204).json({
-    status: "success",
-    data: null,
-  });
-};
+//ROUTES HANDLERS-------------------------------------------
 
 // app.get("/api/v1/tours", getAllTours);
 // app.get("/api/v1/tours/:id", getTour);
@@ -65,14 +30,9 @@ const deleteTour = (req, res) => {
 // app.patch("/api/v1/tours/:id", updateTour);
 // app.delete("/api/v1/tours/:id", deleteTour);
 
-app.route("/api/v1/tours").get(getAllTours).post(createTour);
-app
-  .route("/api/v1/tours/:id")
-  .get(getTour)
-  .patch(updateTour)
-  .delete(deleteTour);
+//ROUTES-------------------------------------------------
 
-const port = 3000;
-app.listen(port, () => {
-  console.log(`app running on port ${port}... `);
-});
+app.use("/api/v1/tours", tourRouter);
+app.use("/api/v1/users", userRouter);
+
+module.exports = app;
