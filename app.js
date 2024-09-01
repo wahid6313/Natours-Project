@@ -1,19 +1,20 @@
-const express = require("express");
+const express = require('express');
 
-const morgan = require("morgan");
+const morgan = require('morgan');
 
-const tourRouter = require("./Routes/tourRoutes");
-const userRouter = require("./Routes/userRoutes");
+const tourRouter = require('./Routes/tourRoutes');
+const userRouter = require('./Routes/userRoutes');
 
 const app = express();
 
 //MIDLEWARE------------------------------------------------
-app.use(morgan("dev"));
+app.use(morgan('dev'));
 
 app.use(express.json());
+app.use(express.static(`${__dirname}/public`));
 
 app.use((req, res, next) => {
-  console.log("hello i am midilleware !");
+  console.log('hello i am midilleware !');
   next();
 });
 
@@ -32,7 +33,7 @@ app.use((req, res, next) => {
 
 //ROUTES-------------------------------------------------
 
-app.use("/api/v1/tours", tourRouter);
-app.use("/api/v1/users", userRouter);
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
 
 module.exports = app;

@@ -1,11 +1,23 @@
-const fs = require("fs");
+const fs = require('fs');
 
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/../wahid.json`));
+
+exports.checkID = (req, res, next, val) => {
+  console.log(`tour id is : ${val}`);
+  // if (id > tours.length) {
+  if (req.params.id * 1 > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: "'Invalid Id",
+    });
+  }
+  next();
+};
 
 exports.getAllTours = (req, res) => {
   console.log(req.requestTime);
   res.status(200).json({
-    status: "succes",
+    status: 'succes',
     requested: req.requestTime,
     results: tours.length,
     data: {
@@ -19,16 +31,8 @@ exports.getTour = (req, res) => {
   const id = req.params.id * 1;
   const tour = tours.find((el) => el.id === id);
 
-  // if (id > tours.length) {
-  if (!tour) {
-    return res.status(404).json({
-      status: "fail",
-      message: "'Invalid Id",
-    });
-  }
-
   res.status(200).json({
-    status: "succes",
+    status: 'succes',
     data: {
       tour,
     },
@@ -36,19 +40,19 @@ exports.getTour = (req, res) => {
 };
 exports.createTour = (req, res) => {
   console.log(req.body);
-  res.send("done");
+  res.send('done');
 };
 exports.updateTour = (req, res) => {
   res.status(200).json({
-    status: "success",
+    status: 'success',
     data: {
-      tour: "< Updated tour Here>",
+      tour: '< Updated tour Here>',
     },
   });
 };
 exports.deleteTour = (req, res) => {
   res.status(204).json({
-    status: "success",
+    status: 'success',
     data: null,
   });
 };
