@@ -5,12 +5,15 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon node server.js"
+    "start": "nodemon node server.js",
+    "start:prod": "NODE_ENV=production nodemon server.js"
   },
   "author": "wahid ali",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "mongoose": "^5.13.22",
     "morgan": "^1.10.0",
     "nodemon": "^3.1.4"
   },
