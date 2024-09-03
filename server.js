@@ -1,32 +1,41 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-
-dotenv.config({ path: './config.env' });
+dotenv.config();
 
 const app = require('./app');
 
-// console.log(process.env);
-console.log(app.get('env'));
-
+// Replace <PASSWORD> with the actual password
 const DB = process.env.DATABASE.replace(
   '<PASSWORD>',
   process.env.DATABASE_PASSWORD,
 );
 
-mongoose
-  // .connect(process.env.DATABASE_LOCAL, {
-  .connect(DB, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true,
-  })
-  .then((con) => {
-    // console.log(con.connections);
-    console.log('DB connection successfully !');
-  });
+// Connect to the MongoDB database
+// mongoose
+//   .connect(DB, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//     useCreateIndex: true,
+//     useFindAndModify: false,
+//   })
+//   .then(() => {
+//     console.log('DB connection successful!');
+//   })
+//   .catch((err) => {
+//     console.error('DB connection error:', err.message);
+//   });
 
-const port = process.env.port || 3000;
-app.listen(port, () => {
-  console.log(`app running on port ${port}... `);
+async function connectionToDataBase() {
+  try {
+    await mongoose.connect(process.env.DATABASE);
+    console.log('dataBase connected successfully');
+  } catch (error) {
+    console.log('Error while connection to dataBase', error.message);
+  }
+}
+
+const port = process.env.PORT || 3000;
+app.listen(port, async () => {
+  await connectionToDataBase();
+  console.log(`App running on port ${port}...`);
 });
