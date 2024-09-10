@@ -26,7 +26,7 @@ async function connectionToDataBase() {
 }
 
 //READ JSON FILE-------------
-const tours = JSON.parse(fs.readFileSync('./wahid.json', 'utf-8'));
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/wahid.json`, 'utf-8'));
 
 //IMPORT DATA INTO DB--------
 const importData = async () => {
