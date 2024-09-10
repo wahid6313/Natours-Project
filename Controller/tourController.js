@@ -29,11 +29,16 @@ exports.getAllTours = async (req, res) => {
       (match) => `$${match}`,
     );
     console.log(JSON.parse(queryString));
-    const query = Tour.find(queryObj);
 
-    r = querystr.replace(/\b(gte| gt | lte | lt)\b/g, (match) => `$${match}`);
-    console.log(JSON.parse(queryObj));
-
+    //SORTING
+    let query = Tour.find(JSON.parse(queryObj));
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(',').join(' ');
+      // console.log(sortBy);
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort('-createdAt');
+    }
     //{difficulty: "easy", duration: {$gte: 5}}
 
     // const tours = await Tour.find({
