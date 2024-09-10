@@ -1,4 +1,4 @@
-const fs = require('fs');
+// const fs = require('fs');
 const Tour = require('./../models/tourModel');
 
 // const tours = JSON.parse(fs.readFileSync(`${__dirname}/../wahid.json`));
@@ -19,7 +19,7 @@ exports.getAllTours = async (req, res) => {
   try {
     //1) FILTERING
     const queryObj = { ...req.query };
-    const excludedFeild = ['page', 'sort', 'limit', 'feilds'];
+    const excludedFeild = ['page', 'sort', 'limit', 'fields'];
     excludedFeild.forEach((el) => delete queryObj[el]);
 
     //2) ADVANCE FILTERING-
@@ -39,14 +39,22 @@ exports.getAllTours = async (req, res) => {
     } else {
       query = query.sort('-createdAt');
     }
+
+    //FEILDS LIMITING
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').join(' ');
+      query = query.select(fields);
+    } else {
+      query = query.select('-__v');
+    }
+    const tours = await query;
+
     //{difficulty: "easy", duration: {$gte: 5}}
 
     // const tours = await Tour.find({
     //   duration: 5,
     //   difficulty: 'easy',
     // });
-
-    const tours = await query;
 
     res.status(200).json({
       status: 'succes',
