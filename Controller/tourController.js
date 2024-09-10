@@ -1,6 +1,14 @@
 // const fs = require('fs');
 const Tour = require('./../models/tourModel');
 
+exports.aliasTopTours = (req, res, next) => {
+  (req.query.limit = '5'),
+    (req.query.sort = 'price'),
+    (req.query.fields = 'name, price, summary, difficulty, rating');
+
+  next();
+};
+
 // const tours = JSON.parse(fs.readFileSync(`${__dirname}/../wahid.json`));
 
 // exports.checkID = (req, res, next, val) => {
@@ -56,8 +64,15 @@ exports.getAllTours = async (req, res) => {
       const skip = (page - 1) * limit;
 
       query = Tour.find().skip(skip).limit(limit);
-      query.select('name');
+      // query.select('name');
     }
+
+    // if (req.query.page) {
+    //   const numTour = await Tour.countDocuments();
+    //   if (skip >= numTour) {
+    //     throw new Error('this page does not exist');
+    //   }
+    // }
 
     const tours = await query;
 
@@ -70,17 +85,19 @@ exports.getAllTours = async (req, res) => {
     });
   } catch (err) {
     res.status(400).json({
-      status: 'fail lsjldfj',
+      status: 'fail',
       message: err.message,
     });
   }
   // console.log(req.query);
 };
 
+//-------
 exports.getTour = async (req, res) => {
   try {
     const tour = await Tour.findById(req.params.id);
     res.status(200).json({
+      //request successfully (200)
       status: 'succes',
       data: {
         tour,

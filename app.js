@@ -39,14 +39,11 @@ app.use('/api/v1/users', userRouter);
 
 // app.get('/api/v1/seed-data', async function (req, res) {
 //   try {
-//     console.log('req coming');
 //     const data = fs.readFileSync('./wahid.json', 'utf-8');
-//     console.log(data);
 //     const stringify = JSON.parse(data);
 //     console.log(stringify);
-//     // const bsonData = data.localeCompare
 //     const dataSeeded = await Tour.insertMany(stringify);
-//     // console.log(dataSeeded);
+
 //     return res.status(201).json({
 //       data: dataSeeded,
 //     });
