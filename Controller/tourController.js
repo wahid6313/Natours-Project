@@ -23,18 +23,19 @@ exports.getAllTours = async (req, res) => {
     excludedFeild.forEach((el) => delete queryObj[el]);
 
     //2) ADVANCE FILTERING-
+    console.log(req.query);
     let queryString = JSON.stringify(queryObj);
     queryString = queryString.replace(
       /\b(gte|gt|lte|lt)\b/g,
       (match) => `$${match}`,
     );
-    console.log(JSON.parse(queryString));
+    // console.log(JSON.parse(queryString));
 
     //SORTING
-    let query = Tour.find(JSON.parse(queryObj));
+    let query = Tour.find(JSON.parse(queryString));
+
     if (req.query.sort) {
       const sortBy = req.query.sort.split(',').join(' ');
-      // console.log(sortBy);
       query = query.sort(sortBy);
     } else {
       query = query.sort('-createdAt');
@@ -47,14 +48,18 @@ exports.getAllTours = async (req, res) => {
     } else {
       query = query.select('-__v');
     }
+
+    // PAGINATION;
+    if (req.query.page || req.query.limit) {
+      const page = req.query.page * 1 || 1;
+      const limit = req.query.limit * 1 || 10;
+      const skip = (page - 1) * limit;
+
+      query = Tour.find().skip(skip).limit(limit);
+      query.select('name');
+    }
+
     const tours = await query;
-
-    //{difficulty: "easy", duration: {$gte: 5}}
-
-    // const tours = await Tour.find({
-    //   duration: 5,
-    //   difficulty: 'easy',
-    // });
 
     res.status(200).json({
       status: 'succes',
@@ -65,12 +70,13 @@ exports.getAllTours = async (req, res) => {
     });
   } catch (err) {
     res.status(400).json({
-      status: 'fail',
+      status: 'fail lsjldfj',
       message: err.message,
     });
   }
-  console.log(req.query);
+  // console.log(req.query);
 };
+
 exports.getTour = async (req, res) => {
   try {
     const tour = await Tour.findById(req.params.id);

@@ -2,7 +2,9 @@ const express = require('express');
 const morgan = require('morgan');
 const tourRouter = require('./Routes/tourRoutes');
 const userRouter = require('./Routes/userRoutes');
+const Tour = require('./models/tourModel');
 const app = express();
+const fs = require('fs');
 
 //MIDLEWARE------------------------------------------------
 if (process.env.NODE_ENV === 'developement') {
@@ -12,10 +14,10 @@ if (process.env.NODE_ENV === 'developement') {
 app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
 
-app.use((req, res, next) => {
-  console.log('hello i am midilleware !');
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log('hello i am midilleware !');
+//   next();
+// });
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
@@ -34,5 +36,23 @@ app.use((req, res, next) => {
 
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+
+// app.get('/api/v1/seed-data', async function (req, res) {
+//   try {
+//     console.log('req coming');
+//     const data = fs.readFileSync('./wahid.json', 'utf-8');
+//     console.log(data);
+//     const stringify = JSON.parse(data);
+//     console.log(stringify);
+//     // const bsonData = data.localeCompare
+//     const dataSeeded = await Tour.insertMany(stringify);
+//     // console.log(dataSeeded);
+//     return res.status(201).json({
+//       data: dataSeeded,
+//     });
+//   } catch (error) {
+//     return res.send(error.message);
+//   }
+// });
 
 module.exports = app;
