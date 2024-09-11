@@ -1,4 +1,5 @@
 // const fs = require('fs');
+const { request } = require('express');
 const Tour = require('./../models/tourModel');
 const ApiFeatures = require('./../utils/apiFeatures');
 
@@ -140,6 +141,58 @@ exports.getTourStats = async (req, res) => {
       status: 'success',
       data: {
         stats,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err.message,
+    });
+  }
+};
+
+exports.getMonthlyPlan = async (req, res) => {
+  try {
+    const year = req.params.year * 1;
+
+    const plan = await Tour.aggregate([
+      {
+        $unwind: '$startDates',
+      },
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $month: '$startDates' },
+          numTourStarts: { $sum: 1 },
+          tours: { $push: '$name' },
+          tourPrice: { $push: '$price' },
+          tourRating: { $push: '$rating' },
+          // tourPrice: { $max: '$price' },
+        },
+      },
+      {
+        $addFields: { month: '$_id' },
+      },
+      {
+        $sort: { numTourStarts: -1 },
+      },
+      {
+        $limit: 20,
+      },
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      results: plan.length,
+      data: {
+        plan,
       },
     });
   } catch (err) {
