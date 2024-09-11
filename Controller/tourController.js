@@ -1,5 +1,6 @@
 // const fs = require('fs');
 const Tour = require('./../models/tourModel');
+const ApiFeatures = require('./../utils/apiFeatures');
 
 exports.aliasTopTours = (req, res, next) => {
   (req.query.limit = '5'),
@@ -9,73 +10,17 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
-// const tours = JSON.parse(fs.readFileSync(`${__dirname}/../wahid.json`));
-
-// exports.checkID = (req, res, next, val) => {
-//   console.log(`tour id is : ${val}`);
-//   // if (id > tours.length) {
-//   if (req.params.id * 1 > tours.length) {
-//     return res.status(404).json({
-//       status: 'fail',
-//       message: "'Invalid Id",
-//     });
-//   }
-//   next();
-// };
-
 exports.getAllTours = async (req, res) => {
   try {
-    //1) FILTERING
-    const queryObj = { ...req.query };
-    const excludedFeild = ['page', 'sort', 'limit', 'fields'];
-    excludedFeild.forEach((el) => delete queryObj[el]);
+    //EXECUTE QUERY
+    const features = new ApiFeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+    const tours = await features.query;
 
-    //2) ADVANCE FILTERING-
-    console.log(req.query);
-    let queryString = JSON.stringify(queryObj);
-    queryString = queryString.replace(
-      /\b(gte|gt|lte|lt)\b/g,
-      (match) => `$${match}`,
-    );
-    // console.log(JSON.parse(queryString));
-
-    //SORTING
-    let query = Tour.find(JSON.parse(queryString));
-
-    if (req.query.sort) {
-      const sortBy = req.query.sort.split(',').join(' ');
-      query = query.sort(sortBy);
-    } else {
-      query = query.sort('-createdAt');
-    }
-
-    //FEILDS LIMITING
-    if (req.query.fields) {
-      const fields = req.query.fields.split(',').join(' ');
-      query = query.select(fields);
-    } else {
-      query = query.select('-__v');
-    }
-
-    // PAGINATION;
-    if (req.query.page || req.query.limit) {
-      const page = req.query.page * 1 || 1;
-      const limit = req.query.limit * 1 || 10;
-      const skip = (page - 1) * limit;
-
-      query = Tour.find().skip(skip).limit(limit);
-      // query.select('name');
-    }
-
-    // if (req.query.page) {
-    //   const numTour = await Tour.countDocuments();
-    //   if (skip >= numTour) {
-    //     throw new Error('this page does not exist');
-    //   }
-    // }
-
-    const tours = await query;
-
+    //SEND RESPONSE
     res.status(200).json({
       status: 'succes',
       results: tours.length,
