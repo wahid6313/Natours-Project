@@ -50,7 +50,7 @@ class ApiFeatures {
       const limit = this.queryString.limit * 1 || 10;
       const skip = (page - 1) * limit;
 
-      this.query = Tour.find().skip(skip).limit(limit);
+      this.query = this.query.find().skip(skip).limit(limit);
     }
     return this;
   }
