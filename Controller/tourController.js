@@ -174,7 +174,6 @@ exports.getMonthlyPlan = async (req, res) => {
           tours: { $push: '$name' },
           tourPrice: { $push: '$price' },
           tourRating: { $push: '$rating' },
-          // tourPrice: { $max: '$price' },
         },
       },
       {
