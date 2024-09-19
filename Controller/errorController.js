@@ -1,3 +1,4 @@
+const { JsonWebTokenError } = require('jsonwebtoken');
 const AppError = require('../utils/appError');
 
 const handleDuplicateFieldsDB = (err) => {
@@ -7,6 +8,8 @@ const handleDuplicateFieldsDB = (err) => {
   const message = `duplicate fields value: x. please use another value! `;
   return new AppError(message, 400);
 };
+
+// const handleJwtError = (err) => new AppError('enter valid token', 401);
 
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
@@ -34,6 +37,7 @@ module.exports = (err, req, res, next) => {
     let error = { ...err };
 
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
+    // if (error.name === JsonWebTokenError) error = handleJwtError(error);
     sendErrorPro(err, res);
   }
 };
