@@ -50,12 +50,12 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-// userSchema.methods.corectPassword = async function (
-//   candidatePassword,
-//   userPassword,
-// ) {
-//   return await bcrypt.compare(candidatePassword, userPassword);
-// };
+userSchema.methods.corectPassword = async function (
+  candidatePassword,
+  userPassword,
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
 
 // userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
 //   return false; // false means not change-
