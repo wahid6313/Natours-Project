@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema({
       message: 'password are not same',
     },
   },
-//   passwordChangedAt: Date,
+  passwordChangedAt: Date,
 //   passwordResetToken: String,
 //   passwordResetExpires: Date,
 });
@@ -57,9 +57,9 @@ userSchema.methods.corectPassword = async function (
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
-// userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
-//   return false; // false means not change-
-// };
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  return false; // false means not change-
+};
 
 // userSchema.methods.createPasswordResetToken = function () {
 //   const resetToken = crypto.randomBytes(32).toString('hex');

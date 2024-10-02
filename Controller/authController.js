@@ -71,35 +71,35 @@ exports.protect = catchAsync(async (req, res, next) => {
   console.log(decoded)
 
   //check if user still exists--
-//   const freshUser = await User.findById(decoded.id);
-//   if (!freshUser) {
-//     return next(
-//       new AppError('the user belonging this token does not no longer'),
-//     );
-//   }
+  const freshUser = await User.findById(decoded.id);
+  if (!freshUser) {
+    return next(
+      new AppError('the user belonging this token does not no longer'),
+    );
+  }
 
   //check if user changed the password after the token was issued--
-//   if (freshUser.changedPasswordAfter(decoded.iat)) {
-//     return next(
-//       new AppError('user recently changed password! please log in again', 401),
-//     );
-//   }
+  if (freshUser.changedPasswordAfter(decoded.iat)) {
+    return next(
+      new AppError('user recently changed password! please log in again', 401),
+    );
+  }
 
-//   req.user = freshUser;
+  req.user = freshUser;
 
   next();
 });
 
-// exports.restrictTo = (...roles) => {
-//   return (req, res, next) => {
-//     if (!roles.includes(req.user.role)) {
-//       return next(
-//         new AppError('you do not have permission to perform this action', 403),
-//       );
-//     }
-//     next();
-//   };
-// };
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError('you do not have permission to perform this action', 403),
+      );
+    }
+    next();
+  };
+};
 
 // exports.forgotPassword = catchAsync(async (req, res, next) => {
 //   //get user based on posted email--
