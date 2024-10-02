@@ -3,8 +3,8 @@ const jwt = require('jsonwebtoken');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
-// const sendEmail = require('../utils/emails');
-// const crypto = require('crypto');
+const sendEmail = require('../utils/emails');
+const crypto = require('crypto');
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -101,47 +101,47 @@ exports.restrictTo = (...roles) => {
   };
 };
 
-// exports.forgotPassword = catchAsync(async (req, res, next) => {
-//   //get user based on posted email--
-//   const user = await User.findOne({ email: req.body.email });
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  //get user based on posted email--
+  const user = await User.findOne({ email: req.body.email });
 
-//   if (!user) {
-//     return next(new AppError('there is no user this email address', 404));
-//   }
+  if (!user) {
+    return next(new AppError('there is no user this email address', 404));
+  }
 
 //   //generate the random reset token--
-//   const resetToken = user.createPasswordResetToken();
+  const resetToken = user.createPasswordResetToken();
 
 //   //send it to user email--
-//   const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
+  const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
 
-//   const message = `forgot your password please enter your password and confirm password: ${resetURL}.\n if you enter please ignore it`;
+  const message = `forgot your password please enter your password and confirm password: ${resetURL}.\n if you enter please ignore it`;
 
-//   try {
-//     await sendEmail({
-//       email: user.email,
-//       subject: 'your password reset token is valid for 10 min',
-//       message,
-//     });
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: 'your password reset token is valid for 10 min',
+      message,
+    });
 
-//     res.status(200).json({
-//       status: 'success',
-//       message: 'token send to email',
-//     });
-//   } catch (err) {
-//     user.passwordResetToken = undefined;
-//     user.passwordResetExpires = undefined;
+    res.status(200).json({
+      status: 'success',
+      message: 'token send to email',
+    });
+  } catch (err) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
 
-//     await user.save({ validateBeforeSave: false });
+    await user.save({ validateBeforeSave: false });
 
-//     return next(
-//       new AppError('there was an error sending the eamil! please try again!'),
-//       500,
-//     );
-//   }
-// });
+    return next(
+      new AppError('there was an error sending the eamil! please try again!'),
+      500,
+    );
+  }
+});
 
-// exports.resetPassword = catchAsync(async (req, res, next) => {
+exports.resetPassword = catchAsync(async (req, res, next) => {
 //   const hashedToken = crypto
 //     .createHash('sha256')
 //     .update(req.params.tokens)
@@ -167,4 +167,4 @@ exports.restrictTo = (...roles) => {
 //     status: 'success',
 //     token,
 //   });
-// });
+});
