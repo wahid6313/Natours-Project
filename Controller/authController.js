@@ -68,7 +68,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   //verification token--
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-  console.log(decoded)
+//   console.log(decoded)
 
   //check if user still exists--
   const freshUser = await User.findById(decoded.id);
@@ -142,29 +142,35 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
-//   const hashedToken = crypto
-//     .createHash('sha256')
-//     .update(req.params.tokens)
-//     .digest('hex');
+// if (!req.params.tokens || typeof req.params.tokens !== 'string') {
+    //     return next(new AppError('Invalid or missing reset token', 400));
+    //   }
 
-//   const user = await User.findOne({
-//     passwordResetToken: hashedToken,
-//     passwordResetExpires: { $gt: Date.now() },
-//   });
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
 
-//   if (!user) {
-//     return next(new AppError('token is valid or has expired'));
-//   }
-//   user.password = req.body.password;
-//   user.passwordConfirm = req.body.passwordConfirm;
-//   user.passwordResetToken = undefined;
-//   user.passwordResetExpires = undefined;
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
 
-//   await user.save();
+  // if token has not expired , and there is user , set the new password--
+if (!user) {
+    return next(new AppError('token is invalid or has expired'));
+  }
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
 
-//   const token = signToken(user._id);
-//   res.status(200).json({
-//     status: 'success',
-//     token,
-//   });
+  await user.save();
+
+ // log the user in, send jwt --
+  const token = signToken(user._id);
+  res.status(200).json({
+    status: 'success',
+    token,
+  });
 });
