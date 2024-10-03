@@ -36,6 +36,7 @@ const importData = async () => {
   } catch (err) {
     console.log(err.message);
   }
+  process.exit();
 };
 
 //DELETE DATA FROM DB--------
@@ -46,6 +47,14 @@ const deleteData = async () => {
   } catch (err) {
     console.log(err.message);
   }
+  process.exit();
 };
 
-console.log(process.argv);
+if(process.argv[2] === "--import") {
+  importData();
+}
+else if(process.argv[2] === "--delete") {
+  deleteData();
+}
+
+// console.log(process.argv);
