@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const User = require('./userModel');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -58,28 +59,35 @@ const tourSchema = new mongoose.Schema(
     startDates: [Date],
     startLocation: {
       type: {
-       type: String,
-       default: "Point",
-       enum: ["point"]
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
       },
       cordinates: [Number],
       address: String,
-      description: String
-   },
-   locations: [
-    {
-      type: {
-        type: [Number],
-        default: "Point",
-        enum: ["Point"]
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: [Number],
+          default: 'Point',
+          enum: ['Point'],
+        },
+        cordinates: [Number],
+        address: String,
+        description: String,
       },
-      cordinates: [Number],
-      address: String,
-      description: String
-    }
-   ]
+    ],
+    guides: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: User.modelName, // Use the model name instead of the model itself
+        required: true,
+      },
+    ],
   },
- 
+
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
@@ -97,13 +105,27 @@ tourSchema.pre('save', function (next) {
   next();
 });
 
+// tourSchema.pre('save', async function (next) {
+//   const guidesPromise = this.guides.map(async (id) => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromise);
+
+//   next();
+// });
+
 //QUERY MIDDLEWARE
 tourSchema.pre('find', function (next) {
+  next();
+});
+
+tourSchema.pre('find', function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v',
+  });
+
   next();
 });
 
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;
-
-
