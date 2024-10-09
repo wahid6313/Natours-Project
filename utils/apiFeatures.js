@@ -38,9 +38,10 @@ class ApiFeatures {
     if (this.queryString.fields) {
       const fields = this.queryString.fields.split(',').join(' ');
       this.query = this.query.select(fields);
-    } else {
-      this.query = this.query.select('name');
     }
+    // else {
+    //   this.query = this.query.select('name, price');
+    // }
     return this;
   }
 
