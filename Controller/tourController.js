@@ -22,7 +22,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
     .limitFields()
     .paginate();
   // const tours = await features.query.explain();
-  const tours = await features.query;
+  const tours = await features.query.explain();
 
   //SEND RESPONSE
   res.status(200).json({
