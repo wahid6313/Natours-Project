@@ -18,18 +18,19 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
     },
   });
 });
-exports.getUser = catchAsync(async (req, res, next) => {
-  const user = await User.findById();
+// exports.getUser = catchAsync(async (req, res, next) => {
+//   const user = await User.findById();
 
-  res.status(500).json({
-    status: 'error',
-    results: user.length,
-    data: {
-      user,
-    },
-  });
-});
+//   res.status(500).json({
+//     status: 'error',
+//     results: user.length,
+//     data: {
+//       user,
+//     },
+//   });
+// });
 
+exports.getUser = factory.getOne(User);
 exports.createUser = factory.createOne(User);
 exports.deleteUser = factory.deleteOne(User);
 exports.updateUser = factory.updateOne(User);
