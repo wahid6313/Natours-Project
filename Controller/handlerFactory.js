@@ -1,3 +1,4 @@
+const { Model } = require('mongoose');
 const AppError = require('../utils/appError');
 const catchAsync = require('./../utils/catchAsync');
 
@@ -46,6 +47,25 @@ exports.createOne = (Model) =>
       status: 'success',
       data: {
         data: doc,
+      },
+    });
+  });
+
+exports.getOne = (Model) =>
+  catchAsync(async (req, res, next) => {
+    const doc = await Model.findById(req.params.id).populate({
+      path: 'guides',
+      select: 'name',
+    });
+
+    if (!tour) {
+      return next(new AppError('NO doc FOUND WITH THAT ID ', 404));
+    }
+
+    res.status(200).json({
+      status: 'succes',
+      data: {
+        doc,
       },
     });
   });
